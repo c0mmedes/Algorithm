@@ -26,12 +26,11 @@ public class Main {
 			
 			q.poll(); 
 			
-			int tmp = q.poll();
-			
-			q.offer(tmp);
+			q.offer(q.poll());
 		}
 
 		System.out.println(ans);
 	}
 
 }
+
