@@ -10,12 +10,12 @@ public class Main {
 		
 		double arr[] = new double[L];
 		
-		int sum = 0;
+		long sum = 0;
 		
 		// a~z를 1~26으로 바꿔서 배열에 넣어주기
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = (int) str.charAt(i) - 96;
-			arr[i] = (arr[i] * Math.pow(31, i)) % 1234567891;
+			arr[i] = (arr[i] * (long) Math.pow(31, i)) % 1234567891;
 			sum += arr[i];
 		}
 		
