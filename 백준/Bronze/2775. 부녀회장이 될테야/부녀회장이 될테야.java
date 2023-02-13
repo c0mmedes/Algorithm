@@ -27,7 +27,14 @@ public class Main {
 					arr[i][j] = arr[i-1][j] + arr[i][j-1];
 				}
 			}
-			System.out.println(arr[k][n]);
+			
+			sb.append(arr[k][n] + "\n");
 		}
+		
+		System.out.println(sb);
+		
 	}
+	
+		
+
 }
