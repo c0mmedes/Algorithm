@@ -1,7 +1,6 @@
 import java.util.Scanner;
 
 public class Main {
-    static final int M = 1234567891;
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		
@@ -9,16 +8,17 @@ public class Main {
 		
 		String str = sc.next(); // 문자열
 		
-		long sum = 0;
-		long pow = 1;
+		double arr[] = new double[L];
 		
-		// a~z를 1~26으로 바꾸기
-		// 정해진 정수타입보다 커진 경우 곱할 때 음수로 바뀌기 때문에 과정마다 나머지연산
-		// math.pow 쓰면 오버플로우
-		for (int i = 0; i < L; i++) {
-			sum += ((int) str.charAt(i) - 96) * pow % M;
-			pow = pow * 31 % M;
+		long sum = 0;
+		
+		// a~z를 1~26으로 바꿔서 배열에 넣어주기
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = (int) str.charAt(i) - 96;
+			arr[i] = (arr[i] * (long) Math.pow(31, i)) % 1234567891;
+			sum += arr[i];
 		}
-		System.out.println(sum % M);
+		
+		System.out.println(sum);
 	}
 }
