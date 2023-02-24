@@ -1,65 +1,70 @@
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
 
-	public static int Dgraph[][] = new int[1001][1001];
-	public static int Bgraph[][] = new int[1001][1001];
-	public static boolean Dvisit[] = new boolean[10001];
-	public static int N;
+	static int N, M, V, map[][];
+	static boolean visited[];
+	static StringBuilder sb;
 	
-	public static void main(String[] args) throws IOException {
-		
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());	  //노드(정점)
-		int M = Integer.parseInt(st.nextToken()); //간선
-		int V = Integer.parseInt(st.nextToken()); //시작노드
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		
+		N = Integer.parseInt(st.nextToken()); // 정점의 개수 
+		M = Integer.parseInt(st.nextToken()); // 간선의 개수 
+		V = Integer.parseInt(st.nextToken()); // 시작 정점의 번호 
 
-		for(int i=0; i<M; i++) {
-			st = new StringTokenizer(br.readLine());
-			int u = Integer.parseInt(st.nextToken()); 
-			int v = Integer.parseInt(st.nextToken()); 
-			
-			Dgraph[u][v] = Dgraph[v][u] = 1;
-			Bgraph[u][v] = Bgraph[v][u] = 1;
+		map = new int[N+1][N+1]; 
+		
+		for (int i = 0; i < M; i++) {
+			st = new StringTokenizer(br.readLine(), " ");
+				int from = Integer.parseInt(st.nextToken());
+				int to = Integer.parseInt(st.nextToken());
+				map[from][to] = map[to][from] = 1;
 		}
 		
-		DFS(V);
-		System.out.println();
-		BFS(V);
+		visited = new boolean[N + 1];
+		sb = new StringBuilder();
+		dfs(V);
+		System.out.println(sb);
 		
+		visited = new boolean[N + 1];
+		sb = new StringBuilder();
+		bfs(V);
+		System.out.println(sb);
 	}
 
-	public static void DFS(int node) {
-		Dvisit[node] = true;
-		System.out.print(node + " ");
+	private static void dfs(int start) {
+		visited[start] = true;
+		sb.append(start + " ");
 		
-		for(int i=1; i<=N; i++) {
-			if(!Dvisit[i] && Dgraph[node][i]==1) {
-				DFS(i);
+		for (int i = 0 ; i < N + 1; i++) {
+			if (map[start][i] != 0 && !visited[i]) {
+				dfs(i);
 			}
 		}
 	}
-	
-	public static void BFS(int node) {
-		boolean Bvisit[] = new boolean[10001];
-		Queue<Integer> que = new LinkedList<>();
+
+	private static void bfs(int start) {
+		Queue<Integer> q = new ArrayDeque<Integer>();
 		
-		Bvisit[node] = true;
-		que.offer(node);
+		q.offer(start);
+		visited[start] = true;
 		
-		while(!que.isEmpty()) {
-			int P = que.poll();
-			System.out.print(P + " ");
+		while(!q.isEmpty()) {
+			int current = q.poll();
+			sb.append(current + " ");
 			
-			for(int i=1; i<=N; i++) {
-				if(!Bvisit[i] && Bgraph[P][i]==1) {
-					Bvisit[i] = true;
-					que.offer(i);				
+			for (int i = 0; i < N+1; i++) {
+				if(map[current][i] == 1 && !visited[i]) {
+					q.offer(i);
+					visited[i] = true;
 				}
 			}
 		}
-		
 	}
 }
