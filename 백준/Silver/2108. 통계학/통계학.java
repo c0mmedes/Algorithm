@@ -14,7 +14,7 @@ public class Main {
 		int sum= 0;
 		int max = Integer.MIN_VALUE;
 		int min = Integer.MAX_VALUE;
-		int mode = 10000;
+		int mode = 0;
 		
 		for(int i=0; i<N; i++) {
 			
