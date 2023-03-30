@@ -41,11 +41,8 @@ public class Main {
         // 시작점 
         bfs(1, 2);
         
-        if(ans == 0) {
-        	System.out.println(0);
-        } else {
-        	System.out.println(ans);
-        }
+        System.out.println(ans);
+        
     }
     
     private static void bfs(int i, int j) {
