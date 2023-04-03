@@ -1,62 +1,81 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Queue;
 
 public class Main {
-	
-	static int N, cnt;
 	static int[][] map;
 	static boolean[][] visited;
-	static int[] dr = {0, 0, -1, 1};
-	static int[] dc = {-1, 1, 0, 0};
 	static List<Integer> list = new ArrayList<>();
+	static int N;
+	static int dr[] = {0, 0, -1, 1};
+	static int dc[] = {1, -1, 0, 0};
 	
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		
-		N = sc.nextInt();
+	static class Coor {
+		int x, y;
+
+		public Coor(int x, int y) {
+			super();
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		N = Integer.parseInt(br.readLine()); // 지도의 크기
 		map = new int[N][N];
 		visited = new boolean[N][N];
 		
 		for (int i = 0; i < N; i++) {
-			String s = sc.next();
+			String str = br.readLine();
 			for (int j = 0; j < N; j++) {
-				map[i][j] = (int) s.charAt(j) - 48;
+				map[i][j] = str.charAt(j) - '0';
 			}
 		}
-
 		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				if (!visited[i][j] && map[i][j] == 1) {
-					dfs(i, j);
-					list.add(cnt);
-					cnt = 0;
+				if(!visited[i][j] && map[i][j] != 0) {
+					bfs(new Coor(i, j));
 				}
 			}
 		}
 		
-		System.out.println(list.size());
 		Collections.sort(list);
-		for(int i = 0; i < list.size(); i++) {
-			System.out.println(list.get(i));
+		
+		System.out.println(list.size());
+		
+		for(int num : list) {
+			System.out.println(num);
 		}
-
 	}
 
-	
-	private static void dfs(int r, int c) {
-		visited[r][c] = true;
-		cnt++;
+	private static void bfs(Coor coor) {
+		int cnt = 0;
+		Queue<Coor> q = new ArrayDeque<>();
+		q.offer(coor);
+		visited[coor.x][coor.y] = true;
 		
-		for (int d = 0; d < 4; d++) {
-			int nr = r + dr[d]; 
-			int nc = c + dc[d]; 
+		while (!q.isEmpty()) {
+			cnt++;
+			Coor current = q.poll();
+			int X = current.x;
+			int Y = current.y;
 			
-			if(0 <= nr && nr < N && 0 <= nc && nc < N && !visited[nr][nc] && map[nr][nc] == 1) {
-				dfs(nr, nc);
+			for (int d = 0; d < 4; d++) {
+				int nx = X + dr[d];
+				int ny = Y + dc[d];
+				
+				if (0 <= nx && nx < N && 0 <= ny && ny < N && map[nx][ny] != 0 && !visited[nx][ny]) {
+					visited[nx][ny] = true;
+					q.offer(new Coor(nx, ny));
+				}
 			}
 		}
+		list.add(cnt);
 	}
 }
