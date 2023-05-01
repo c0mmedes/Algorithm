@@ -2,35 +2,75 @@ import java.util.*;
 import java.io.*;
 
 class Solution {
-    static Set<Integer> set = new HashSet<>();    
-    public boolean isPrime(int num) {
-        if(num < 2) return false;
-        for (int i = 2; i <= Math.sqrt(num); i++) {
-            if(num % i == 0) return false;
+    static int N;
+    static int cnt = 0;
+    static String inputs[];
+	static boolean visited[];
+    static List<Integer> list;
+    static StringBuilder sb;
+	static void subset(int cnt) {
+	if (cnt == N) {
+        sb = new StringBuilder();
+        for (int i = 0; i < N; i++) { 
+            if(!visited[i]) continue;
+            sb.append(inputs[i]);
         }
-        return true;
-    }
-
-    private void recur(String comb, String others){
-        if(!comb.equals("")) {
-            set.add(Integer.valueOf(comb));
-        } 
+        String str = sb.toString();
+        String reverseStr = sb.reverse().toString();
+        System.out.println(str);
         
-        for (int i = 0; i < others.length(); i++){
-            recur(comb + others.charAt(i), others.substring(0, i) + others.substring(i + 1));
+        if (str.length() > 0 && (!str.equals("0") || !str.equals("1"))) {
+            int num = Integer.parseInt(str);
+            int rNum = Integer.parseInt(reverseStr);
+            
+            list.add(num);
+            list.add(rNum);
         }
-    }
+  
+		return;
+		}
+		visited[cnt] = true;
+		subset(cnt + 1);
+		visited[cnt] = false;
+		subset(cnt + 1);
+	}
+    
+    static void check(int num) {
+        System.out.println(num);
+        for (int i = 2; i < Math.sqrt(cnt); i++){
+            if(cnt % i == 0) break;                   
+        }
+        cnt++;
+	}
     
     public int solution(String numbers) {
-        recur("", numbers);
-        
-        
-        int cnt = 0;
-        Iterator<Integer> it = set.iterator();
-        while(it.hasNext()) {
-            int number = it.next();
-            if (isPrime(number)) cnt++;
+        N = numbers.length();
+        inputs = new String[N];
+        visited = new boolean[N];
+        for (int i = 0; i < N; i++){
+            inputs[i] = numbers.charAt(i) + "";
         }
+
+        list = new ArrayList<>();
+        subset(0);
+        Set<Integer> set = new HashSet<>();
+        
+        for (int num : list) {
+            if (num == 0 || num == 1) continue; 
+            set.add(num);
+        }
+        
+        // Iterator iter = set.iterator();
+        for (Integer value : set) {
+            int intValue = value.intValue();
+            check(intValue);
+        }
+        
+        // while(iter.hasNext()){
+        //     int num = iter.next();
+            // check();
+        // }
+        
         return cnt;
     }
 }
