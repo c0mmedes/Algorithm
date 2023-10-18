@@ -38,8 +38,6 @@ class Solution {
                 }
             }
             
-            if(sum == 0) sum = -1;
-            
             answer[i] = sum;
         }
         
