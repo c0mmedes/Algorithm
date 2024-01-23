@@ -9,8 +9,6 @@ class Solution {
         for (int num : number) {
             size += num;
         }
-        
-        if(size >= discount.length) return 0;
             
         Map<String, Integer> map = new HashMap();
                 
@@ -20,10 +18,6 @@ class Solution {
             for (int j = 0; j < number.length; j++) {
                 map.put(want[j], number[j]);
             }
-            
-//             System.out.println(i);
-//             System.out.println(i+size);
-//             System.out.println(discount[13]);
             
             // 싸이즈만큼 
             for (int j = i; j < (i+size); j++) {
