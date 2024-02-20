@@ -33,33 +33,27 @@ public class Solution {
                 arrK[n] = Integer.parseInt(st.nextToken()); // 칼로리
             }
 
-            subset(0);
+            subset_bit();
 
             System.out.println("#" + t + " " + answer);
         }
     }
 
-    private static void subset(int cnt) {
-        if (cnt == N) {
-            int sumT = 0; // 맛의 합
-            int sumK = 0; // 칼로리의 합
-            for (int i = 0; i < N; i++) {
-                if(!visited[i]) continue;
-
-                sumK += arrK[i];
-
-                if (sumK <= L) {
-                    sumT += arrT[i];
+    private static void subset_bit() {
+            for (int i = 0; i < (1 << N); i++) {
+                int sumT = 0; // 맛의 합
+                int sumK = 0; // 칼로리의 합
+                for (int j = 0; j < N; j++) {
+                    if ((i & (1 << j)) != 0) {
+                        sumK += arrK[j];
+                        if (sumK <= L) {
+                            sumT += arrT[j];
+                        }
+                    }
+                }
+                if (sumT > answer) {
+                    answer = sumT;
                 }
             }
-            if (sumT > answer) {
-                answer = sumT;
-            }
-            return;
-        }
-        visited[cnt] = true;
-        subset(cnt + 1);
-        visited[cnt] = false;
-        subset(cnt + 1);
     }
 }
