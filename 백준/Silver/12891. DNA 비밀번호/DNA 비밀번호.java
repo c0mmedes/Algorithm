@@ -1,88 +1,70 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int p, checked;
-    static char[] ss;
-    static int[] temp, arr;
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int lenS = Integer.parseInt(st.nextToken()); // 민호가 임의로 만든 DNA 문자열 길이
+        int lenP = Integer.parseInt(st.nextToken()); // 비밀번호로 사용할 부분문자열의 길이
 
-        int s = Integer.parseInt(st.nextToken()); // 문자열의 길이
-        p = Integer.parseInt(st.nextToken()); // 부분 문자열의 길이
+        String DNA = br.readLine(); // 민호가 임의로 만든 DNA 문자열
 
-        String str = br.readLine();
-        ss = str.toCharArray(); // 문자열
-        checked = 0; // 4가 되어야 함
+        int str[] = new int[4]; // 부분문자열에 포함되어야 할 A C G T 의 최소 개수
+        int currentStr[] = new int[4];
 
-        arr = new int[4]; // 부분문자열에 포함되어야 할 최소 개수
-
-        st = new StringTokenizer(br.readLine(), " ");
-        for (int i = 0; i < 4; i ++){
-            arr[i] = Integer.parseInt(st.nextToken());
-            if(arr[i] == 0) checked++;
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < 4; i++) {
+            str[i] = Integer.parseInt(st.nextToken());
         }
 
-        temp = new int[4]; // 현재를 저장할 배열
-
-        int ans = 0;
-
-        for (int i = 0; i < p; i++){
-            add(ss[i]);
+        // 초기값
+        for (int i = 0; i < lenP; i++) {
+            if(DNA.charAt(i) == 'A') currentStr[0]++;
+            if(DNA.charAt(i) == 'C') currentStr[1]++;
+            if(DNA.charAt(i) == 'G') currentStr[2]++;
+            if(DNA.charAt(i) == 'T') currentStr[3]++;
         }
 
-        if(checked==4) ans++;
+        boolean flag = true;
 
-        for (int i = p; i < s; i++) {
-                add(ss[i]);
-                minus(ss[i-p]);
-                if(checked==4) ans++;
+        for (int i = 0; i < 4; i++) {
+            if(currentStr[i] < str[i]) {
+                flag = false;
+                break;
+            }
         }
 
-        System.out.print(ans);
-    }
+        int answer = 0;
 
-    private static void minus(char c) {
-        switch (c) {
-            case 'A':
-                if(temp[0] == arr[0]) checked--;
-                temp[0]--;
-                break;
-            case 'C':
-                if(temp[1] == arr[1]) checked--;
-                temp[1]--;
-                break;
-            case 'G':
-                if(temp[2] == arr[2]) checked--;
-                temp[2]--;
-                break;
-            case 'T':
-                if(temp[3] == arr[3]) checked--;
-                temp[3]--;
-                break;
-        }
-    }
+        if (flag) answer++;
 
-    private static void add(char c) {
-        switch (c) {
-            case 'A':
-                temp[0]++;
-                if(temp[0] == arr[0]) checked++;
-                break;
-            case 'C':
-                temp[1]++;
-                if(temp[1] == arr[1]) checked++;
-                break;
-            case 'G':
-                temp[2]++;
-                if(temp[2] == arr[2]) checked++;
-                break;
-            case 'T':
-                temp[3]++;
-                if(temp[3] == arr[3]) checked++;
-                break;
+        for (int i = 1; i <= lenS-lenP; i++) {
+            flag = true;
+            // 옮겨간 제외된 부분 빼주기
+            if(DNA.charAt(i-1) == 'A') currentStr[0]--;
+            if(DNA.charAt(i-1) == 'C') currentStr[1]--;
+            if(DNA.charAt(i-1) == 'G') currentStr[2]--;
+            if(DNA.charAt(i-1) == 'T') currentStr[3]--;
+
+            // 옮겨서 추가된 부분 더해주기
+            if(DNA.charAt(i+lenP-1) == 'A') currentStr[0]++;
+            if(DNA.charAt(i+lenP-1) == 'C') currentStr[1]++;
+            if(DNA.charAt(i+lenP-1) == 'G') currentStr[2]++;
+            if(DNA.charAt(i+lenP-1) == 'T') currentStr[3]++;
+
+            for (int j = 0; j < 4; j++) {
+                if(currentStr[j] < str[j]) {
+                    flag = false;
+                    break;
+                }
+            }
+
+            if (flag) answer++;
         }
+
+        System.out.println(answer);
     }
 }
