@@ -1,39 +1,42 @@
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-	public static void main(String[] args) {	
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt(); // 1~N 명까지 N명의 사람이 원을 이루면서 앉아있다.
-		int K = sc.nextInt(); // 순서대로 K번째 사람을 제거, 모두 제거될 때 까지
-		StringBuilder sb = new StringBuilder();
-		
-		Queue<Integer> q = new LinkedList<Integer>();
-		
-		for (int i = 1; i <= N; i++) {
-			q.offer(i);
-		}
-		
-		int cnt = 1;
-		int idx = 0;
-		int arr[] = new int[N];
-		
-		
-		while(q.size()!=0) {
-			for(int i = 1; i < K; i++) {
-				q.offer(q.poll());
-			}
-			
-			arr[idx] = q.poll();
-			idx++;
-		}
-		
-		String ans = Arrays.toString(arr);
-		ans = ans.replace("[", "<");
-		ans = ans.replace("]", ">");
-		
-		System.out.println(ans);
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        
+        Queue<Integer> q = new ArrayDeque<>();
+        for (int i = 1; i <= N; i++) {
+            q.offer(i);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<");
+
+        while(!q.isEmpty()) {
+            for (int i = 1; i <= K; i++) {
+                int num = q.poll();
+                if (i==K) {
+                    sb.append(num);
+                    sb.append(", ");
+                    continue;
+                }
+                q.offer(num);
+            }
+        }
+
+        String ans = sb.toString();
+        ans = ans.substring(0,ans.length()-2);
+        ans += ">";
+
+        System.out.println(ans);
+    }
 }
