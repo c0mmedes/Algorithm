@@ -71,6 +71,7 @@ public class Solution {
                 if (visited[nx][ny]) continue;
                 if (map[nx][ny] != (map[x][y] + 1)) continue;
 
+                visited[nx][ny] = true;
                 sum++;
                 q.offer(new Coor(nx, ny));
             }
