@@ -11,10 +11,6 @@ class Solution {
         }
     }
     public int solution(int[][] maps) {
-        int answer = 0;
-        
-        bfs(maps);
-        
         return bfs(maps);
     }
 
@@ -46,7 +42,6 @@ class Solution {
             }
             ans++;
         }
-        
         return -1;
     }
 }
