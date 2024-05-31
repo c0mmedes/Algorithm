@@ -1,88 +1,59 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Main {
-	static int N;
-	static String map[][];
-	static boolean visited[][];
-	static int dr[] = {0, 0, -1, 1};
-	static int dc[] = {-1, 1, 0, 0};
-	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
-		N = Integer.parseInt(br.readLine()); 
-		map = new String[N][N];
-		
-		for (int i = 0; i < N; i++) {
-			String s = br.readLine();
-			for (int j = 0; j < N; j++) {
-				map[i][j] = s.charAt(j) + "";
-			}
-		}
-		
-		int cnt1 = 0;
-		int cnt2 = 0;
-		
-		visited = new boolean[N][N];
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if(map[i][j].equals("R") && !visited[i][j]) {
-					dfs(i, j, "R");
-					cnt1++;
-				} else if(map[i][j].equals("G") && !visited[i][j]) {
-					dfs(i, j, "G");
-					cnt1++;
-				} else if(map[i][j].equals("B") && !visited[i][j]) {
-					dfs(i, j, "B");
-					cnt1++;
-				}
-			}
-		}
-		
-		visited = new boolean[N][N];
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if(map[i][j].equals("B") && !visited[i][j]) {
-					dfs(i, j, "B");
-					cnt2++;
-				} else if (!visited[i][j]) {
-					dfs2(i, j);
-					cnt2++;
-				}
-				
-			}
-		}
-		
-		System.out.println(cnt1 + " " + cnt2);
-	}
-	
-	private static void dfs2(int x, int y) {
-		visited[x][y] = true;
-		
-		for (int d = 0; d < 4; d++) {
-			int nx = x + dr[d];
-			int ny = y + dc[d];
-			
-			if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
-			if(map[nx][ny].equals("B")) continue;
-			if(visited[nx][ny]) continue;
-			
-			dfs2(nx, ny);
-		}
-	}
+    static int N;
+    static char[][] arr1, arr2;
+    static int dr[] = {-1, 1, 0, 0};
+    static int dc[] = {0, 0, -1, 1};
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-	private static void dfs(int x, int y, String rgb) {
-		visited[x][y] = true;
-		
-		for (int d = 0; d < 4; d++) {
-			int nx = x + dr[d];
-			int ny = y + dc[d];
-			
-			if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
-			if(!map[nx][ny].equals(rgb)) continue;
-			if(visited[nx][ny]) continue;
-			
-			dfs(nx, ny, rgb);
-		}
-	}
+        N = Integer.parseInt(br.readLine());
+
+        arr1 = new char[N][N];
+        arr2 = new char[N][N];
+
+        int ans1 = 0;
+        int ans2 = 0;
+
+        for (int i = 0; i < N; i++) {
+            String s = br.readLine();
+            for (int j = 0; j < N; j++) {
+                arr1[i][j] = s.charAt(j);
+                arr2[i][j] = arr1[i][j] == 'G' ? 'R' : arr1[i][j]; // 적색과 녹색 모두 적색으로
+            }
+        }
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if(arr1[i][j] != 'O') {
+                    dfs(i, j, arr1[i][j], arr1);
+                    ans1++;
+                }
+                if(arr2[i][j] != 'O') {
+                    dfs(i, j, arr2[i][j], arr2);
+                    ans2++;
+                }
+            }
+        }
+        
+        System.out.print(ans1 + " " + ans2);
+    }
+
+    private static void dfs(int r, int c, char color, char arr[][]){
+        arr[r][c] = 'O';
+
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dr[d];
+            int nc = c + dc[d];
+
+            if(nr < 0 || nc < 0 || nr >= N || nc >= N) continue;
+            if(arr[nr][nc] != color) continue;
+
+            arr[nr][nc] = 'O'; // 방문처리
+            dfs(nr, nc, color, arr);
+        }
+    }
 }
