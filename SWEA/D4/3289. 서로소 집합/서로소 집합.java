@@ -1,69 +1,66 @@
-import java.io.FileInputStream;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Solution {
-	static StringBuilder sb = new StringBuilder();
-	static int N;
-	static int[] p;
-	
-	public static void main(String[] args) throws Exception {
-		Scanner sc = new Scanner(System.in);
-		
-		int T = sc.nextInt();
-		
-		for (int tc = 1; tc <= T; tc++) {
-			
-			int n = sc.nextInt(); // n개의 집합
-			p = new int[n+1];
-			
-			for (int i = 1; i <= n; i++) {
-				p[i] = i;
-			}
-			
-			int m = sc.nextInt(); // 연산의 개수
-			
-			sb.append("#").append(tc).append(' ');
-			
-			for (int i = 0; i < m; i++) {
-				int a = sc.nextInt(); // 
-				int b = sc.nextInt();
-				int c = sc.nextInt();
-				
-				if (a == 0) {
-					union(b, c);
-				} else {
-					if (find(b) == find(c)) {
-						sb.append(1);
-					} else {
-						sb.append(0);
-					}
-				}
-			}
-			
-			
-			sb.append('\n');
-			// 0 a b -> 집합 합치기
-			// 1 a b -> 같은집합인지 확인
-		}
-		
-		System.out.println(sb);
-	}
-	
-	private static void union(int b, int c) {
-		int aRoot = find(b);
-		// b 집합의 대표 찾기
-		int bRoot = find(c);
-		if (aRoot == bRoot) return;
-		
-		p[bRoot] = aRoot;
-		return;
-	}
+    static int arr[];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine()); // tc
 
-	private static int find(int a) {
-		if (p[a] == a) return a;
-		// 0  1  2  3  4
-		// 0, 1, 1, 2, 4
-		return p[a] = find(p[a]);
-	}
-	
+        for (int t = 1; t <= T; t++) {
+            StringBuilder sb = new StringBuilder();
+            StringTokenizer st = new StringTokenizer(br.readLine());
+
+            int n = Integer.parseInt(st.nextToken()); // 1~n까지의 집합
+            arr = new int[n+1];
+
+            for (int i = 1; i <= n; i++) arr[i] = i;
+
+            int m = Integer.parseInt(st.nextToken()); // 연산의 개수
+
+            for (int i = 0; i < m; i++) {
+                st = new StringTokenizer(br.readLine());
+                int num[] = new int[3];
+                for (int j = 0; j < 3; j++) {
+                    num[j] = Integer.parseInt(st.nextToken());
+                }
+                int a = num[1];
+                int b = num[2];
+                //  union
+                if(num[0] == 0) {
+                    union(a, b);
+                }
+                //  find
+                if (num[0] == 1) {
+                    if (find(a) == find(b)) {
+                        sb.append(1);
+                        continue;
+                    }
+                    sb.append(0);
+                }
+            }
+
+            System.out.println("#"+ t + " " + sb);
+        }
+    }
+
+    private static void union (int a, int b) {
+        a = find(a); // a의 부모와
+        b = find(b); // b의 부모를 찾아서
+
+        if (a == b) return;
+
+        arr[b] = a;
+    }
+
+    private static int find (int x) {
+        if(arr[x] == x) return x;
+        return arr[x] = find(arr[x]);
+    }
 }
+
+// 합집합은 0 a b 의 형태, a가 포함된 집합과 b가 포합된 집합을 합친다는 의미
+// 1 a b 일 경우 두 원소가 같은 집합에 포함되어 있는지를 확인. a 와 b가 같은 집합인지
+// 1로 시작하는 입력에 대해서 같은 집합이라면 1, 아니면 0을 한줄에 출력
