@@ -6,9 +6,9 @@ import java.util.*;
 public class Main {
     static int R, C;
     static char arr[][];
-    static boolean visited[];
     static int dr[] = {-1, 1, 0, 0};
     static int dc[] = {0, 0, -1, 1};
+    static boolean alpha[] = new boolean[26];
     static int res = 0;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -19,7 +19,6 @@ public class Main {
         C = Integer.parseInt(st.nextToken());
 
         arr = new char[R][C];
-        visited = new boolean[26];
 
         for (int i = 0; i < R; i++) {
             String s = br.readLine();
@@ -28,26 +27,28 @@ public class Main {
             }
         }
 
-        dfs(0, 0, 1);
-
-        System.out.println(res);
+        if (R*C == 1) {
+            System.out.println(1);
+        } else {
+            dfs(0, 0, 0);
+            System.out.println(res);
+        }
     }
 
-    private static void dfs(int r, int c, int count) {
-        visited[arr[r][c] - 'A'] = true;
-        res = Math.max(res, count);
+    private static void dfs(int r, int c, int cnt) {
+        // 방문했던 알파벳이 나오거나 모든 곳을 방문했다면 최댓값 갱신하고 return
+        if(alpha[arr[r][c] - 'A'] || cnt == R*C ) {
+            res = Math.max(res, cnt);
+            return;
+        }
+        alpha[arr[r][c] - 'A'] = true;
 
         for (int d = 0; d < 4; d++) {
             int nr = r + dr[d];
             int nc = c + dc[d];
-
             if (nr < 0 || nc < 0 || nr >= R || nc >= C) continue;
-            if (visited[arr[nr][nc]- 'A']) continue;
-            dfs(nr, nc, count + 1);
-            visited[arr[nr][nc] - 'A'] = false;
+            dfs(nr, nc, cnt + 1);
         }
+        alpha[arr[r][c] - 'A'] = false;
     }
 }
-
-
-// 같은 알파벳이 적힌 칸을 두번 지날 수 없다.
