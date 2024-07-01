@@ -1,86 +1,67 @@
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Queue;
-
-class Coor3{
-	int r, c;
-
-	public Coor3(int r, int c) {
-		super();
-		this.r = r;
-		this.c = c;
-	}
-}
+import java.util.*;
 
 public class Solution {
-	static int[][] map, visited;
-	static int dr[] = {-1,1,0,0};
-	static int dc[] = {0,0,-1,1};
-	static int ans, N;
-	static StringBuilder sb = new StringBuilder();
-	public static void main(String[] args) throws Exception {
-	//	System.setIn(new FileInputStream("data/1249.txt"));
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
-		
-		int C = Integer.parseInt(br.readLine()); // test case
-		
-		for (int tc = 1; tc <= C; tc++) {
-			N = Integer.parseInt(br.readLine()); // 지도의 크기
-			
-			map = new int[N][N];
-			ans = Integer.MAX_VALUE;
-			
-			for (int i = 0; i < N; i++) {
-				String s = br.readLine();
-				for (int j = 0; j < N; j++) {
-					map[i][j] = (int) s.charAt(j) - 48;
-				}
-			}
-			
-			sb.append('#').append(tc);
-			bfs(0, 0);
-			
-		}
-        
-        System.out.println(sb);
-	}
-	
-	private static void bfs(int r, int c) {
-		visited = new int[N][N];
-		Queue<Coor3> q = new ArrayDeque<Coor3>();
-		
-		for (int i = 0; i < N; i++) {
-			Arrays.fill(visited[i], Integer.MAX_VALUE);
-		}
-		
-		visited[r][c] = 0;
-		
-		q.offer(new Coor3(r, c));
-		
-		while(!q.isEmpty()) {
-			Coor3 cur = q.poll();
-			int curR = cur.r;
-			int curC = cur.c;
-			
-			for (int d = 0; d < 4; d++) {
-				int nr = curR + dr[d];
-				int nc = curC + dc[d];
-				
-				if(0 <= nr && nr < N && 0 <= nc && nc < N) {
-					if(visited[nr][nc] > visited[curR][curC] + map[nr][nc]) {
-						visited[nr][nc] = visited[curR][curC] + map[nr][nc];
-						q.offer(new Coor3(nr, nc));
-					}
-				}
-			}
-		}
-		
-		sb.append(' ').append(visited[N-1][N-1]).append('\n');
-	}
-	
-	
+    static class Coor {
+        int x, y;
+        public Coor (int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int dx[] = {-1, 1, 0, 0};
+    static int dy[] = {0, 0, -1, 1};
+    static int N, arr[][];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        int T = Integer.parseInt(br.readLine()); // 입력받는 데이터의 길이
+
+        for (int t = 1; t <= T; t++) {
+            N = Integer.parseInt(br.readLine());
+            arr = new int[N][N];
+
+            for (int i = 0; i < N; i++) {
+                String s = br.readLine(); // 정보
+                for (int j = 0; j < N; j++) {
+                    arr[i][j] = s.charAt(j) - '0';
+                }
+            }
+
+            sb.append("#" + t + " " + bfs() + "\n");
+        }
+
+        System.out.print(sb);
+    }
+
+    private static int bfs() {
+        int tempArr[][] = new int[N][N];
+        for (int i = 0; i < N; i++) Arrays.fill(tempArr[i], Integer.MAX_VALUE);
+        Queue<Coor> q = new ArrayDeque<>();
+        q.offer(new Coor(0, 0));
+        tempArr[0][0] = 0;
+
+        while(!q.isEmpty()) {
+            Coor coor = q.poll();
+            int x = coor.x;
+            int y = coor.y;
+
+            for (int d = 0; d < 4; d++) {
+                int nx = x + dx[d];
+                int ny = y + dy[d];
+                if (nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+                if (tempArr[x][y] + arr[nx][ny] < tempArr[nx][ny]) {
+                    tempArr[nx][ny] = tempArr[x][y] + arr[nx][ny];
+                    q.offer(new Coor(nx, ny));
+                    }
+                }
+            }
+        return tempArr[N-1][N-1];
+    }
 }
+// 파손된 도로들은 이동 불가
+// 출발지 S(0, 0) 에서 도착지 G(N-1, N-1)까지 가는 경로 중 복구 시간이 가장 짧은 경로에 대한 총 복구 시간 ㄱ하기
+// 파여진 만큼의 복구 시간
+// 최단거리 구하기 X 최단시간 구하기 O
