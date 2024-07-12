@@ -1,123 +1,80 @@
-/*
- 1. 공기인 부분을 방문처리(visited)
- 2. 공기가 아닌 부분은 0으로 바꿔주고  치즈의 개수를 세어준다.
-  
-  
-*/
-
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.StringTokenizer;
-
-class Cheese {
-    int x, y;
-
-    public Cheese(int x, int y) {
-        super();
-        this.x = x;
-        this.y = y;
-    }
-    
-}
+import java.util.*;
 
 public class Main {
-    static int N, M, cnt;
+    static int N, M, arr[][];
+    static int dx[] = {-1, 1, 0, 0};
+    static int dy[] = {0, 0, -1, 1};
     static boolean visited[][];
-    static int map[][];
-    static int dr[] = {0, 0, -1, 1};
-    static int dc[] = {1, -1, 0, 0};
-    
-    public static void main(String[] args) throws Exception {
+    static class Coor {
+        int x, y;
+
+        public Coor (int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+    }
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        
-        N = Integer.parseInt(st.nextToken()); // 세로
-        M = Integer.parseInt(st.nextToken()); // 가로
-        map = new int[N][M];
-        int allCheese = 0;
-        
-        
-        for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
-            for (int j = 0; j < M; j++) {
-                map[i][j] = Integer.parseInt(st.nextToken());
-                if (map[i][j] == 1) allCheese++; // 치즈의 모든 개수를 세어줌
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        arr = new int[N][M];
+
+        for (int i = 0; i < N; i++){
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < M; j++){
+                arr[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        
 
-        int time = 0; // 걸린 시간
-        
-        while(allCheese != 0) { // 모든 치즈가 사라질 때까지
-        	visited = new boolean[N][M];
-        	time++; // bfs 한싸이클 돌면 외곽의 치즈가 지워짐
-        	cnt = 0;
-        	bfs();
-        	allCheese -= cnt; // 전체 치즈에서 지워진 치즈의 개수를 빼줌
-//        	dfs(new Cheese(0, 0));
+        int time = 0;
+        int cheese = 0;
+        int cheeseTemp = 0;
+
+        while(true) {
+            visited = new boolean[N][M];
+            cheese = cheeseTemp;
+            cheeseTemp = bfs();
+            if (cheeseTemp == 0) break;
+            time++;
         }
-        
-        
-        System.out.println(time);
-        System.out.println(cnt);
+
+        System.out.println(time + "\n" + cheese);
     }
 
-    private static void bfs() {
-    	Queue<Cheese> q = new ArrayDeque<>();
-    	q.offer(new Cheese(0, 0));
-    	
-    	while(!q.isEmpty()) {
-    		Cheese chs = q.poll();
-    		int x = chs.x;
-    		int y = chs.y;
-    		
-    		for (int d = 0; d < 4; d++) {
-    			int nx = x + dr[d];
-    			int ny = y + dc[d];
-    			
-    			if (0 <= nx && nx < N && 0 <= ny && ny < M && !visited[nx][ny]) {
-    				visited[nx][ny] = true;
-    				
-    				// 공기 일 때 다음 탐색을 위해 큐에 넣어줌
-    				if(map[nx][ny] == 0) {
-    					q.offer(new Cheese(nx, ny));
-    				// 치즈를 만나면 0으로 바꾸고 치즈의 개수를 세어줌
-    				} else {
-    					map[nx][ny] = 0;
-    					cnt++;
-    				}
-    			}
-    		}
-    	}
-		
-	}
+    private static int bfs() {
+        Queue<Coor> q = new ArrayDeque<>();
+        q.offer(new Coor(0, 0));
+        int cheese = 0;
 
-	private static void dfs(Cheese coor) {
-        int x = coor.x;
-        int y = coor.y;
-        
-        visited[x][y] = true;
-        
-        for (int d = 0; d < 4; d++) {
-            int nx = x + dr[d];
-            int ny = y + dc[d];
+        while(!q.isEmpty()) {
+            Coor c = q.poll();
 
-            if (0 <= nx && nx < N && 0 <= ny && ny < M && !visited[nx][ny]) {
-				visited[nx][ny] = true;
-				
-				// 공기 일 때 다음 탐색을 위해 dfs에 넣어줌
-				if(map[nx][ny] == 0) {
-					dfs(new Cheese(nx, ny));
-				// 치즈를 만나면 0으로 바꾸고 치즈의 개수를 세어줌
-				} else {
-					map[nx][ny] = 0;
-					cnt++;
-				}
-			}
-            
+            for (int d = 0; d < 4; d++) {
+                int nx = c.x + dx[d];
+                int ny = c.y + dy[d];
+
+                if(nx >= N || ny >= M || nx < 0 || ny < 0) continue;
+                if(visited[nx][ny]) continue;
+
+                visited[nx][ny] = true;
+
+                if(arr[nx][ny] == 1) {
+                    arr[nx][ny] = 0;
+                    cheese++;
+                }
+                else {
+                    q.offer(new Coor(nx, ny));
+                }
+            }
         }
+        return cheese;
     }
-
 }
+
+// 한 시간이 지나면 공기와 접촉된 부분은 녹아서 사라짐 (가장 자리는 없어진다)
+// 치즈를 모두 없애는데 걸리는 시간과 모두 녹기 한 시간 전에 남아있는 치즈의 수 구하기
