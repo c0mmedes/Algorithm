@@ -23,7 +23,8 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
 
         arr = new int[N][M];
-
+        visited = new boolean[N][M];
+        
         for (int i = 0; i < N; i++){
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < M; j++){
@@ -36,7 +37,6 @@ public class Main {
         int cheeseTemp = 0;
 
         while(true) {
-            visited = new boolean[N][M];
             cheese = cheeseTemp;
             cheeseTemp = bfs();
             if (cheeseTemp == 0) break;
@@ -47,6 +47,7 @@ public class Main {
     }
 
     private static int bfs() {
+        for (int i = 0; i < N; i++) Arrays.fill(visited[i], false);
         Queue<Coor> q = new ArrayDeque<>();
         q.offer(new Coor(0, 0));
         int cheese = 0;
