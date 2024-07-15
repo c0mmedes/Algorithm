@@ -1,126 +1,103 @@
-//combination 돌려서 M개 뽑기
-//뽑은 인덱스의 해당하는 좌표를 큐에 넣어줌
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-   static class Virus {
-      int x, y;
+    static int N, M, map[][], copyMap[][], ans;
+    static boolean visited[][];
+    static List<Coor> inputs;
+    static Coor[] numbers;
+    static int dx[] = {-1, 1, 0, 0};
+    static int dy[] = {0, 0, -1, 1};
+    static class Coor {
+        int x, y;
 
-      public Virus(int x, int y) {
-         super();
-         this.x = x;
-         this.y = y;
-      }
-   }
+        public Coor (int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken()); // 놓을 수 있는 바이러스의 개수
 
-   static int N, M, time, virusCnt, min;
-   static int dr[] = { -1, 1, 0, 0 };
-   static int dc[] = { 0, 0, -1, 1 };
-   static int map[][];
-   static int[] numbers;
-   static List<Virus> list;
-   static boolean visited[][];
-   static Queue<Virus> q;
+        map = new int[N][N];
+        visited = new boolean[N][N];
+        ans = Integer.MAX_VALUE;
+        inputs = new ArrayList<>();
+        numbers = new Coor[M];
 
-   public static void main(String[] args) throws Exception {
-      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-      StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-      N = Integer.parseInt(st.nextToken()); // 연구소의 크기
-      M = Integer.parseInt(st.nextToken()); // 놓을 수 있는 바이러스의 개수
-
-      map = new int[N][N]; // 바이러스 맵
-
-      numbers = new int[M];
-      list = new ArrayList<>();
-
-      virusCnt = 0;
-      min = Integer.MAX_VALUE;
-
-// 0은 빈 칸, 1은 벽, 2는 바이러스 놓을 수 있는 칸
-      for (int i = 0; i < N; i++) {
-         st = new StringTokenizer(br.readLine(), " ");
-         for (int j = 0; j < N; j++) {
-            map[i][j] = Integer.parseInt(st.nextToken());
-            if (map[i][j] == 2) {
-               list.add(new Virus(i, j));
-               virusCnt++;
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < N; j++) {
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if(map[i][j] == 2) inputs.add(new Coor(i, j));
             }
-         }
-      }
+        }
 
-      comb(0, 0);
-      
-      min = Math.min(min, time);
-      System.out.println(min);
-   }
+        comb(0, 0);
+        if(ans == Integer.MAX_VALUE) ans = -1;
+        System.out.println(ans);
+    }
 
-   private static void comb(int cnt, int start) {
-      if (cnt == M) {
-         visited = new boolean[N][N];
-         q = new ArrayDeque<>();
-         for (int i = 0; i < M; i++) {
-            q.offer(list.get(numbers[i]));
-            visited[list.get(numbers[i]).x][list.get(numbers[i]).y] = true;
-         }
-         bfs();
-         return;
-      }
+    private static void comb(int cnt, int start) {
+        if (cnt == M) {
+            copyMap = new int[N][N];
+            for (int i = 0; i < N; i++) copyMap[i] = Arrays.copyOf(map[i], map[i].length);
 
-      for (int i = start; i < virusCnt; i++) {
-         numbers[cnt] = i;
-         comb(cnt + 1, i + 1);
-      }
-   }
+            int level = spreadVirus() - 1;
 
-   private static void bfs() {
-      time = -1;
-
-      while (!q.isEmpty()) {
-         int size = q.size();
-
-         while (size-- > 0) {
-            Virus t = q.poll();
-
-            for (int d = 0; d < 4; d++) {
-               int nx = t.x + dr[d];
-               int ny = t.y + dc[d];
-
-               if (nx < 0 || ny < 0 || nx >= N || ny >= N)
-                  continue;
-               if (map[nx][ny] == 1 || visited[nx][ny])
-                  continue;
-
-               q.offer(new Virus(nx, ny));
-               visited[nx][ny] = true;
+            // copymap을 돌면서 0이 있으면 false
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++){
+                    if(copyMap[i][j] == 0 || copyMap[i][j] == 2) {
+                        return;
+                    }
+                }
             }
-         }
-         time++;
-      }
 
-      boolean flag = false;
-      for (int i = 0; i < N; i++) {
-         for (int j = 0; j < N; j++) {
-            if (map[i][j] != 1 && !visited[i][j]) {
-               flag = true;
-               break;
+            ans = Math.min(ans, level);
+            return;
+        }
+
+        for (int i = start; i < inputs.size(); i++) {
+            numbers[cnt] = inputs.get(i);
+            comb(cnt + 1, i + 1);
+        }
+    }
+
+    private static int spreadVirus() {
+        for (int i = 0; i < N; i++) Arrays.fill(visited[i], false);
+        Queue<Coor> q = new ArrayDeque<>();
+
+        for (int i = 0; i < M; i++) {
+            copyMap[numbers[i].x][numbers[i].y] = -1;
+            q.offer(new Coor(numbers[i].x, numbers[i].y));
+        }
+
+        int level = 0;
+
+        while(!q.isEmpty()) {
+            int size = q.size();
+            while(size-- > 0) {
+                Coor c = q.poll();
+                for (int d = 0; d < 4; d++) {
+                    int nx = c.x + dx[d];
+                    int ny = c.y + dy[d];
+
+                    if (nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+                    if (visited[nx][ny] || copyMap[nx][ny] == 1 || copyMap[nx][ny] == -1) continue;
+
+                    q.offer(new Coor(nx, ny));
+                    copyMap[nx][ny] = -1;
+                    visited[nx][ny] = true;
+                }
             }
-         }
-      }
-
-      if (flag)
-         if(min == Integer.MAX_VALUE) {
-            time = -1;            
-         }
-
-      if (!flag) {
-         min = Math.min(min, time);
-      }
-   }
+            level++;
+        }
+        return level;
+    }
 }
