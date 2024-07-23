@@ -1,67 +1,67 @@
-import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
+    static class Coor {
+        int x, y;
 
-	static int n,sx,sy,dx,dy;
-	public static void main(String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st = null;
-		
-		int t = Integer.parseInt(br.readLine());
-		for(int tc=0; tc<t; tc++) {
-			n = Integer.parseInt(br.readLine());
-			List<int[]> list = new ArrayList<>();
-			for(int i=0; i<n+2; i++) {
-				st = new StringTokenizer(br.readLine());
-				int x = Integer.parseInt(st.nextToken());
-				int y = Integer.parseInt(st.nextToken());
-				if(i==0) {
-					sx = x;
-					sy = y;
-				}else if(i==n+1) {
-					dx = x;
-					dy = y;
-				}else {
-					list.add(new int[]{x,y});
-				}
-			}
-			
-			bw.write(bfs(list)? "happy\n" : "sad\n");
-		}
-		
-		bw.flush();
-		bw.close();
-	}
-	
-	static boolean bfs(List<int[]> list) {
-		Queue<int[]> q = new LinkedList<>();
-		boolean[] visited = new boolean[n];
-		q.add(new int[] {sx,sy});
-		while(!q.isEmpty()) {
-			int[] pos = q.poll();
-			int px = pos[0], py = pos[1];
-			if(Math.abs(px-dx) + Math.abs(py-dy) <= 1000) {
-				return true;
-			}
-			
-			for(int i=0; i<n; i++) {
-				if(!visited[i]) {
-					int nx = list.get(i)[0], ny = list.get(i)[1];
-					int dis = Math.abs(px - nx) + Math.abs(py - ny);
-					if(dis <= 1000) {
-						visited[i] = true;
-						q.add(new int[]{nx,ny});
-					}
-				}
-			}
-		}
-		return false;
-	}
-	
+        public Coor (int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static Coor home, festival;
+    static List<Coor> store;
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+
+        int t = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+
+        for (int tc = 0; tc < t; tc++) {
+            int n = Integer.parseInt(br.readLine()); // 편의점의 개수
+
+            // 상근이네
+            st = new StringTokenizer(br.readLine());
+            home = new Coor(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+
+            // 편의점
+            store = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                st = new StringTokenizer(br.readLine());
+                store.add(new Coor(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())));
+            }
+
+            // 페스티벌
+            st = new StringTokenizer(br.readLine());
+            festival = new Coor(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+
+            if(bfs()) sb.append("happy\n");
+            else sb.append("sad\n");
+        }
+        System.out.println(sb);
+    }
+
+    private static boolean bfs() {
+        Queue<Coor> q = new ArrayDeque<>();
+        q.offer(home);
+
+        while(!q.isEmpty()) {
+            Coor c = q.poll();
+            if (Math.abs(c.x - festival.x) + Math.abs(c.y - festival.y) <= 1000) {
+                return true;
+            }
+
+            for (int i = store.size()-1; i >= 0; i--) {
+                if(Math.abs(c.x - store.get(i).x) + Math.abs(c.y - store.get(i).y) <= 1000) {
+                    q.offer(store.get(i));
+                    store.remove(i);
+                }
+            }
+        }
+
+        return false;
+    }
 }
