@@ -1,85 +1,132 @@
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Solution {
-	static int N, M, C;
-	static int map[][];
-	static int res;
-	static int sel[];
-	static int max[];
-	public static void main(String[] args) throws Exception {
-	//	System.setIn(new FileInputStream("data/2115.txt"));
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
-		int T = Integer.parseInt(br.readLine());
-		
-		for (int tc = 1; tc <= T; tc++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			N = Integer.parseInt(st.nextToken()); // 벌통들의 크기
-			M = Integer.parseInt(st.nextToken()); // 선택할 수 있는 벌통의 개수
-			C = Integer.parseInt(st.nextToken()); // 채취할 수 있는 최대 양
-			res = 0;
-			map = new int[N][N];
-			// 두 인부의 시작 위치를 저장할 공간
-			sel = new int[2];
-			for (int i = 0; i < N; i++) {
-				st = new StringTokenizer(br.readLine());
-				for (int j = 0; j < N; j++) {
-					map[i][j] = Integer.parseInt(st.nextToken());
-				}
-			}
-			
-			combi(0, 0);
-			System.out.println("#" + tc + " " + res);
-		}
-	}
-	private static void combi(int cnt, int num) {
-		// 항상 두명의 인부니까 
-		if(cnt == 2) {
-			// 인부가 선택한 꿀들을 저장할 배열
-			int honey[] = new int[M];
-			max = new int[2];
-			// 첫 번째 인부의 시작점
-			int start = sel[0];
-			for (int i = 0; i < M; i++) {
-				honey[i] = map[start/N][start%N + i];
-			}
-			subSet(0, 0, 0, 0, honey);
-			
-			// 두 번째 인부의 시작점
-			start = sel[1];
-			for (int i = 0; i < M; i++) {
-				honey[i] = map[start/N][start%N + i];
-			}
-			subSet(1, 0, 0, 0, honey);
-			
-			res = Math.max(res, max[0] + max[1]);
-			return;
-		}
-		
-		if(num > N * N - M) return;
-		
-		// 일꾼을 선택하는 경우
-		if(num%N <= N-M) {
-			sel[cnt] = num;
-			combi(cnt+1, num + M);
-		}
-		// 일꾼을 선택하지 않는 경우
-		combi(cnt, num + 1);
-	}
-	private static void subSet(int num, int idx, int sW, int sP, int honey[]) {
-		if (sW > C) return;
-		
-		if(idx == M) {
-			max[num] = Math.max(max[num], sP);
-			return;
-			
-		}
-		// 골랐을 때
-		subSet(num, idx + 1, sW + honey[idx], sP + (honey[idx]*honey[idx]), honey);
-		// 안골랐을 때 
-		subSet(num, idx + 1, sW, sP, honey);
-	}
+    static int N, M, C, ans, sum, max, numbers[], arr[][], num[];
+    static boolean subsetVisited[];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine());
+
+        for (int t = 1; t <= T; t++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+
+            N = Integer.parseInt(st.nextToken()); // 벌통들의 크기
+            M = Integer.parseInt(st.nextToken()); // 선택할 수 있는 벌통의 개수
+            C = Integer.parseInt(st.nextToken()); // 꿀을 채취할 수 있는 최대 양
+
+            arr = new int[N][N];
+            numbers = new int[2];
+            ans = 0;
+
+            for (int i = 0; i < N; i++) {
+                st = new StringTokenizer(br.readLine());
+                for (int j = 0; j < N; j++) {
+                    arr[i][j] = Integer.parseInt(st.nextToken());
+                }
+            }
+
+            comb(0, 0);
+
+            System.out.println("#" + t + " " + ans);
+        }
+    }
+
+    private static void comb(int cnt, int start) {
+        if (cnt == 2) {
+            boolean visited[] = new boolean[N*N];
+
+            // 같은 행에 있으면 안됨
+//            if (numbers[0]/N == numbers[1]/N) return;
+            // 두 명의 일꾼이 뽑은 벌통의 시작 위치부터 작업
+            for (int num : numbers) {
+                // 뽑은 애부터 앞으로 M칸
+                int row = num/N;
+                for (int i = num; i < num+M; i++) {
+                    if(i/N != row || visited[i]) return;
+                    visited[i] = true;
+                }
+            }
+
+//            System.out.println();
+            // 벌통 작업 통과했다면 계산 작업 시작
+
+            // 계산 작업
+            int temp = 0;
+
+
+            for (int i = 0; i < N*N; i++) {
+                num = new int[M];
+                if(visited[i]) {
+
+                    for (int j = 0; j < M; j++) {
+                        num[j] = arr[(i+j)/N][(i+j)%N];
+                
+                    }
+//                    System.out.println();
+                    i += M -1 ;
+//                    System.out.println("엥 = " + i);
+                    // 뽑은 벌통 제한값 계산
+                    subsetVisited = new boolean[M];
+                    sum = 0;
+                    max = 0;
+                    subset(0);
+
+              
+//                    System.out.println(max);
+                    temp += max;
+                }
+                
+                // M만큼 안남아있으면 돌릴필요 없음
+                if(i >= N*N-M) break;
+            }
+
+
+            ans = Math.max(ans, temp);
+            return;
+        }
+
+        for (int i = start; i < N*N; i++) {
+            numbers[cnt] = i;
+            comb(cnt + 1, i + 1);
+        }
+    }
+
+    private static void subset(int cnt) {
+        if (cnt == M) {
+            int cost = 0;
+            int cut = 0;
+            for (int i = 0; i < M; i++) {
+                if(!subsetVisited[i]) continue;
+                cut += num[i];
+                // 꿀을 채취할 수 있는 최대 양 처리
+                if(cut > C) {
+//                    System.out.println(cut);
+                    break;
+                }
+                cost += num[i] * num[i];
+            }
+
+            max = Math.max(max, cost);
+            return;
+        }
+
+        subsetVisited[cnt] = true;
+        subset(cnt + 1);
+        subsetVisited[cnt] = false;
+        subset(cnt + 1);
+    }
+
 }
+
+// 일꾼 2명은 서로 겹치지 않게 M개의 벌통을 선택해야한다.
+// 각 벌통당 C를 초과하면 안됨
+// 이 때 꿀통들의 수를 제곱해서 더한 것이 가장 크게 되게 만들기.
+//            N = 3
+//            0.0 0.1 0.2 0.3-- 0  1  2  3      -- [N/3][N%3]
+//            1.0 1.1 1.2 1.3-- 4  5  6  7      --
+//            2.0 2.1 2.2 2.3-- 8  9  10 11     --
+//            3.0 3.1 3.2 3.3-- 12 13 14 15     --
