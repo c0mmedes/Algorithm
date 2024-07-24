@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Solution {
@@ -39,8 +38,6 @@ public class Solution {
         if (cnt == 2) {
             boolean visited[] = new boolean[N*N];
 
-            // 같은 행에 있으면 안됨
-//            if (numbers[0]/N == numbers[1]/N) return;
             // 두 명의 일꾼이 뽑은 벌통의 시작 위치부터 작업
             for (int num : numbers) {
                 // 뽑은 애부터 앞으로 M칸
@@ -51,39 +48,21 @@ public class Solution {
                 }
             }
 
-//            System.out.println();
             // 벌통 작업 통과했다면 계산 작업 시작
 
-            // 계산 작업
             int temp = 0;
+            num = new int[M];
 
-
-            for (int i = 0; i < N*N; i++) {
-                num = new int[M];
-                if(visited[i]) {
-
-                    for (int j = 0; j < M; j++) {
-                        num[j] = arr[(i+j)/N][(i+j)%N];
-                
-                    }
-//                    System.out.println();
-                    i += M -1 ;
-//                    System.out.println("엥 = " + i);
-                    // 뽑은 벌통 제한값 계산
-                    subsetVisited = new boolean[M];
-                    sum = 0;
-                    max = 0;
-                    subset(0);
-
-              
-//                    System.out.println(max);
-                    temp += max;
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < M; j++) {
+                    num[j] = arr[(numbers[i]+j)/N][(numbers[i]+j)%N];
                 }
-                
-                // M만큼 안남아있으면 돌릴필요 없음
-                if(i >= N*N-M) break;
+                subsetVisited = new boolean[M];
+                sum = 0;
+                max = 0;
+                subset(0);
+                temp += max;
             }
-
 
             ans = Math.max(ans, temp);
             return;
@@ -104,7 +83,6 @@ public class Solution {
                 cut += num[i];
                 // 꿀을 채취할 수 있는 최대 양 처리
                 if(cut > C) {
-//                    System.out.println(cut);
                     break;
                 }
                 cost += num[i] * num[i];
@@ -119,7 +97,6 @@ public class Solution {
         subsetVisited[cnt] = false;
         subset(cnt + 1);
     }
-
 }
 
 // 일꾼 2명은 서로 겹치지 않게 M개의 벌통을 선택해야한다.
